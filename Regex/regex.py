@@ -1,83 +1,88 @@
-from parser_regex import incarca_regex
+from regex_parser import load_regex
 
-def match_regex_manual(pattern, cuvant):
-    # Cazul pt siruri goale (Acceptare)
+def match_regex_manual(pattern, word):
+    # Base case for empty strings (Acceptance)
     if not pattern:
-        return not cuvant
+        return not word
         
-    # Cazul pt un singur caracter in regex
+    # Base case for a single character in regex
     if len(pattern) == 1:
-        return len(cuvant) == 1 and (pattern == '.' or pattern == cuvant)
+        return len(word) == 1 and (pattern == '.' or pattern == word)
 
-    # izolam reuniunea '|' doar la nivelul principal (nu in interiorul parantezelor)
-    parti = []
-    nivel = 0
-    curent = ""
+    # Isolate alternation '|' only at the top level (not inside parentheses)
+    parts = []
+    level = 0
+    current = ""
     for c in pattern:
-        if c == '(': nivel += 1
-        elif c == ')': nivel -= 1
+        if c == '(':
+            level += 1
+        elif c == ')':
+            level -= 1
         
-        if c == '|' and nivel == 0:
-            parti.append(curent)
-            curent = ""
+        if c == '|' and level == 0:
+            parts.append(current)
+            current = ""
         else:
-            curent += c
-    parti.append(curent)
+            current += c
+    parts.append(current)
     
-    if len(parti) > 1:
-        return any(match_regex_manual(p, cuvant) for p in parti)
+    if len(parts) > 1:
+        return any(match_regex_manual(p, word) for p in parts)
 
-    # extragem primul token (caracter simplu sau bloc intre paranteze)
+    # Extract the first token (single character or parenthesized block)
     if pattern[0] == '(':
-        nivel = 0
+        level = 0
         for i, c in enumerate(pattern):
-            if c == '(': nivel += 1
-            elif c == ')': nivel -= 1
-            if nivel == 0:
+            if c == '(':
+                level += 1
+            elif c == ')':
+                level -= 1
+            if level == 0:
                 break
         
-        # daca parantezele nu sunt formatate corect
-        if nivel != 0: i = len(pattern) - 1
+        # If parentheses are not properly balanced
+        if level != 0:
+            i = len(pattern) - 1
             
-        element = pattern[1:i] # excludem parantezele exterioare
+        element = pattern[1:i]  # Exclude outer parentheses
         rest_pattern = pattern[i+1:]
     else:
         element = pattern[0]
         rest_pattern = pattern[1:]
 
-    # verificare daca token ul e urmat de (*)
-    are_stea = False
+    # Check if the token is followed by Kleene star (*)
+    has_star = False
     if rest_pattern and rest_pattern[0] == '*':
-        are_stea = True
+        has_star = True
         rest_pattern = rest_pattern[1:]
 
-    # aplicam logica de potrivire si avansam cuvantul in mod recursiv
-    if are_stea:
-        # ramura A: Ignoram elementul cu * (0 aparitii)
-        if match_regex_manual(rest_pattern, cuvant):
+    # Apply matching logic and advance recursively
+    if has_star:
+        # Branch A: Ignore star element (0 occurrences)
+        if match_regex_manual(rest_pattern, word):
             return True
             
-        # ramura B: Consumam din cuvant o potrivire a elementului si pastram * (+1 aparitii)
-        for i in range(1, len(cuvant) + 1):
-            if match_regex_manual(element, cuvant[:i]) and match_regex_manual(pattern, cuvant[i:]):
+        # Branch B: Consume one match of the element and keep the star (+1 occurrences)
+        for i in range(1, len(word) + 1):
+            if match_regex_manual(element, word[:i]) and match_regex_manual(pattern, word[i:]):
                 return True
         return False
         
     else:
-        # fara *, cautam o singura potrivire (Concatenare)
-        for i in range(1, len(cuvant) + 1):
-            if match_regex_manual(element, cuvant[:i]) and match_regex_manual(rest_pattern, cuvant[i:]):
+        # Without star: look for a single match (Concatenation)
+        for i in range(1, len(word) + 1):
+            if match_regex_manual(element, word[:i]) and match_regex_manual(rest_pattern, word[i:]):
                 return True
         return False
 
 if __name__ == "__main__":
     try:
-        regex = incarca_regex("limbaj.regex") # citim regex-ul
-        sir = input(f"Test regex [{regex}]: ") #testam cuvantul
+        regex = load_regex("language.regex")  # Read regex from file
+        test_str = input(f"Test regex [{regex}]: ")
         
-        if match_regex_manual(regex, sir):
-            print("DA - Acceptat")
+        if match_regex_manual(regex, test_str):
+            print("YES - Accepted")
         else:
-            print("NU - Respins")
+            print("NO - Rejected")
     except FileNotFoundError:
-        print("Eroare: Lipseste limbaj.regex!")
+        print("Error: Missing language.regex file!")

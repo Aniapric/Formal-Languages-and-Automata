@@ -1,4 +1,0 @@
-!start!
-! Regex pentru siruri care incep cu 0 si se termina cu 1 !
-0(0|1)*1
-!stop!

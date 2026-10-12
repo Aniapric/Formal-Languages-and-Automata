@@ -1,78 +1,84 @@
-from parser_automat import incarca_pda
+from pda_parser import load_pda
 
-def ruleaza_pda(cuvant, start, finale, delta):
-    # (index_cuvant, stare_actuala, stiva)
-    # Stiva este reprezentata ca un tuplu 
-    configuratii_actuale = {(0, start, ())}
+def run_pda(word, start, final_states, delta):
+    # (word_index, current_state, stack)
+    # The stack is represented as a tuple
+    current_configurations = {(0, start, ())}
     
-    # adaug si posibilitatea de a incepe cu tranzitii epsilon
-    configuratii_actuale = exploreaza_epsilon(configuratii_actuale, delta)
+    # Include initial epsilon transitions
+    current_configurations = explore_epsilon(current_configurations, delta)
 
-    while configuratii_actuale:
-        urmatoarele_configuratii = set()
+    while current_configurations:
+        next_configurations = set()
         
-        for idx, stare, stiva in configuratii_actuale:
-            # Daca am terminat cuvantul si suntem intr-o stare finala
-            if idx == len(cuvant) and stare in finale:
+        for idx, state, stack in current_configurations:
+            # If we reached the end of the word and we are in an accepting/final state
+            if idx == len(word) and state in final_states:
                 return True
             
-            simbol = cuvant[idx] if idx < len(cuvant) else None
+            symbol = word[idx] if idx < len(word) else None
             
-            # incercam tranzitii cu simbol real
-            if simbol:
-                urmatoarele_configuratii.update(
-                    tranzitie(stare, simbol, stiva, idx + 1, delta)
+            # Try transitions consuming an input symbol
+            if symbol:
+                next_configurations.update(
+                    transition(state, symbol, stack, idx + 1, delta)
                 )
             
-            # tranzitiile epsilon sunt mereu verificate (simbol '.')
-            urmatoarele_configuratii.update(
-                tranzitie(stare, '.', stiva, idx, delta)
+            # Epsilon transitions are always checked (symbol '.')
+            next_configurations.update(
+                transition(state, '.', stack, idx, delta)
             )
-        # conditie ca sa evitam buclele infinite 
-        if urmatoarele_configuratii == configuratii_actuale:
+        
+        # Termination condition to prevent infinite loops
+        if next_configurations == current_configurations:
             break
-        configuratii_actuale = urmatoarele_configuratii
+        current_configurations = next_configurations
 
     return False
 
-def tranzitie(stare, simbol, stiva, urmator_idx, delta):
-    noi_config = set()
-    top = stiva[-1] if stiva else '.'
+def transition(state, symbol, stack, next_idx, delta):
+    new_configs = set()
+    top = stack[-1] if stack else '.'
     
-    # verificam doua cazuri de POP: simbolul de sus sau ignore (.)
-    for pop_simbol in [top, '.']:
-        if (stare, simbol, pop_simbol) in delta:
-            for noua_stare, push_simbol in delta[(stare, simbol, pop_simbol)]:
-                noua_stiva = list(stiva)
-                if pop_simbol != '.': # daca am scos ceva, eliminam de pe stiva
-                    noua_stiva.pop()
-                if push_simbol != '.': # daca trebuie sa punem ceva
-                    noua_stiva.append(push_simbol)
+    # Check both POP cases: top symbol or ignore (.)
+    for pop_symbol in [top, '.']:
+        if (state, symbol, pop_symbol) in delta:
+            for new_state, push_symbol in delta[(state, symbol, pop_symbol)]:
+                new_stack = list(stack)
+                if pop_symbol != '.':  # If popping an element, remove from stack
+                    new_stack.pop()
+                if push_symbol != '.':  # If pushing an element
+                    new_stack.append(push_symbol)
                 
-                noi_config.add((urmator_idx, noua_stare, tuple(noua_stiva)))
-    return noi_config
+                new_configs.add((next_idx, new_state, tuple(new_stack)))
+    return new_configs
 
-def exploreaza_epsilon(configuratii, delta):
-    #epsilon closure pt PDA
-    schimbare = True
-    while schimbare:
-        schimbare = False
-        noi = set()
-        for idx, stare, stiva in configuratii:
-            gasite = tranzitie(stare, '.', stiva, idx, delta)
-            for g in gasite:
-                if g not in configuratii:
-                    noi.add(g)
-                    schimbare = True
-        configuratii.update(noi)
-    return configuratii
+def explore_epsilon(configurations, delta):
+    # Epsilon closure for PDA
+    changed = True
+    while changed:
+        changed = False
+        new_configs = set()
+        for idx, state, stack in configurations:
+            found = transition(state, '.', stack, idx, delta)
+            for item in found:
+                if item not in configurations:
+                    new_configs.add(item)
+                    changed = True
+        configurations.update(new_configs)
+    return configurations
+
+# Aliases for backwards compatibility
+ruleaza_pda = run_pda
+tranzitie = transition
+exploreaza_epsilon = explore_epsilon
 
 if __name__ == "__main__":
-    _, _, finale, start, delta = incarca_pda("limbaj.pda")
-    cuvant = input("Introdu cuvant PDA (ex: 0011): ")
-    rezultat = ruleaza_pda(cuvant, start, finale, delta)
+    _, _, final_states, start, delta = load_pda("language.pda")
+    word = input("Enter a string for PDA (e.g. 0011): ")
+    result = run_pda(word, start, final_states, delta)
     
-    if rezultat:
-        print(f"Cuvântul '{cuvant}' a fost ACCEPTAT.")
+    if result:
+        print(f"The string '{word}' was ACCEPTED.")
     else:
-        print(f"Cuvântul '{cuvant}' a fost RESPINS.")
+        print(f"The string '{word}' was REJECTED.")

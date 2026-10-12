@@ -1,53 +1,54 @@
-from parser_automat import incarca_automat
+from automaton_parser import load_automaton
 
-
-def epsilon_closure(stari_initiale, delta):
-    inchidere = set(stari_initiale)
+def epsilon_closure(initial_states, delta):
+    closure = set(initial_states)
     
     while True:
-        stari_noi = set()
-        for stare in inchidere:
-            if (stare, '.') in delta:
-                for vecina in delta[(stare, '.')]:
-                    if vecina not in inchidere:
-                        stari_noi.add(vecina)
+        new_states = set()
+        for state in closure:
+            if (state, '.') in delta:
+                for neighbor in delta[(state, '.')]:
+                    if neighbor not in closure:
+                        new_states.add(neighbor)
        
-        if not stari_noi:
+        if not new_states:
             break
        
-        inchidere.update(stari_noi)
+        closure.update(new_states)
         
-    return inchidere
+    return closure
 
-def ruleaza_nfa(cuvant, start, finale, delta):
-    stari_actuale = epsilon_closure({start}, delta)
+def run_nfa(word, start, final_states, delta):
+    current_states = epsilon_closure({start}, delta)
     
-    for simbol in cuvant:
-        urmatoarele_stari = set()
+    for symbol in word:
+        next_states = set()
         
-        for s in stari_actuale:
-            if (s, simbol) in delta:
-              
-                for dest in delta[(s, simbol)]:
-                    urmatoarele_stari.add(dest)
+        for s in current_states:
+            if (s, symbol) in delta:
+                for dest in delta[(s, symbol)]:
+                    next_states.add(dest)
        
-        stari_actuale = epsilon_closure(urmatoarele_stari, delta)
+        current_states = epsilon_closure(next_states, delta)
         
-        if not stari_actuale:
+        if not current_states:
             return False
     
-    for s in stari_actuale:
-        if s in finale:
+    for s in current_states:
+        if s in final_states:
             return True
             
     return False
 
+# Aliases for backwards compatibility
+ruleaza_nfa = run_nfa
+
 if __name__ == "__main__":
-    alfabet, stari, finale, start, delta = incarca_automat("limbaj.nfa")
-    cuvant = input("Cuvant NFA: ")
+    alphabet, states, final_states, start, delta = load_automaton("language.nfa")
+    word = input("Enter a string for NFA: ")
     
-    rezultat = ruleaza_nfa(cuvant, start, finale, delta)
-    if rezultat:
-        print(f"Cuvântul '{cuvant}' a fost ACCEPTAT.")
+    result = run_nfa(word, start, final_states, delta)
+    if result:
+        print(f"The string '{word}' was ACCEPTED.")
     else:
-        print(f"Cuvântul '{cuvant}' a fost RESPINS.")
+        print(f"The string '{word}' was REJECTED.")

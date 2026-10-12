@@ -1,25 +1,28 @@
-from parser_automat import incarca_automat
+from automaton_parser import load_automaton
 
-def ruleaza_dfa(cuvant, start, finale, delta):
-    stare_actuala = start
+def run_dfa(word, start, final_states, delta):
+    current_state = start
     
-    for simbol in cuvant:
-        cheie = (stare_actuala, simbol)
+    for symbol in word:
+        key = (current_state, symbol)
 
-        if cheie  in delta:
-            stare_actuala = delta[cheie][0]
+        if key in delta:
+            current_state = delta[key][0]
         else:
             return False
             
-    return stare_actuala in finale
+    return current_state in final_states
+
+# Alias for backwards compatibility
+ruleaza_dfa = run_dfa
 
 if __name__ == "__main__":
-    alfabet, stari, finale, start, delta = incarca_automat("limbaj.dfa")
+    alphabet, states, final_states, start, delta = load_automaton("language.dfa")
     
-    cuvant = input("Introdu un cuvant pentru testare DFA: ")
-    rezultat = ruleaza_dfa(cuvant, start, finale, delta)
+    word = input("Enter a string to test with DFA: ")
+    result = run_dfa(word, start, final_states, delta)
     
-    if rezultat:
-        print(f"Cuvantul '{cuvant}' a fost ACCEPTAT.")
+    if result:
+        print(f"The string '{word}' was ACCEPTED.")
     else:
-        print(f"Cuvantul '{cuvant}' a fost RESPINS.")
+        print(f"The string '{word}' was REJECTED.")

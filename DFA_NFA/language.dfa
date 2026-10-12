@@ -1,0 +1,15 @@
+!start!
+! Accepts strings containing at least one '1' !
+A = 0,1
+Q = a,b
+F = b
+S = a
+
+! State 'a': no '1' found yet !
+(a 0) => a
+(a 1) => b
+
+! State 'b': accepting/final state; once reached, remains here regardless of input !
+(b 0) => b
+(b 1) => b
+!stop!

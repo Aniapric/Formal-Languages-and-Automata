@@ -1,6 +1,6 @@
 !start!
-!pentru cuvinte care contin cel putin un 0!
-! Alfabetul si starile !
+! For strings containing at least one '0' !
+! Alphabet and states !
 A = 0,1
 Q = q0,q1,q2,q3
 F = q1,q3
@@ -11,10 +11,10 @@ S = q0
 (q0 0) => q1
 (q1 1) => q1
 
-! Folosim '.' pentru epsilon !
+! Use '.' for epsilon transitions !
 (q0 .) => q2
 
-! Verificam daca se termina in 0 !
+! Check if it ends in 0 !
 (q2 0) => q3
 (q2 1) => q2
 
