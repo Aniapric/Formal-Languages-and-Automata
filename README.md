@@ -1,39 +1,42 @@
-# Laboratoare LFA (Limbaje Formale și Automate)
-Acest repository conține implementările laboratoarelor pentru cursul de Limbaje Formale și Automate. 
+# Formal Languages and Automata
 
-## Structura repository-ului:
-Ierarhia fișierelor este organizată pe categorii tematice:
+This repository contains the lab implementations for the Formal Languages and Automata course.
 
-* DFA_NFA/: Implementări ale automatelor finite deterministe și nedeterministe.
+## Repository structure
 
-* Generator_gramatici/: Un generator de limbaje bazat pe gramatici formale.
+The files are organized by topic:
 
-* Joc/: Implementarea unui joc interactiv bazat pe logica automatelor pushdown ("Jaf la Muzeu") .
+- DFA_NFA/: Implementations of deterministic and nondeterministic finite automata.
 
-* PDA/: Implementări de automate finite cu stivă PDA (Pushdown Automaton) pentru recunoașterea limbajelor context-free.
+- Grammar_Generator/: A language generator based on formal grammars.
 
-* Regex/: Un motor de potrivire (matching) a expresiilor regulate implementat manual prin backtracking.
-  
+- Museum_Heist_Game/: An interactive game based on pushdown automata logic ("Museum Heist").
 
-## 🏛️ Descrierea jocului "Jaf la Muzeu" (PDA Game)
+- PDA/: Implementations of pushdown automata (PDA) for recognizing context-free languages.
 
-Acest joc este o implementare practică a unui Automat Finit cu Stivă (PDA - Pushdown Automaton).
+- Regex/: A regular expression matching engine implemented manually using backtracking.
 
-### Cum se joacă 🎮 :
+- Erdos_Gyarfas_Conjecture/: Paper on the Erdős–Gyárfás conjecture (in Romanian).
 
-Ești un hoț de artă care trebuie să se infiltreze într-un muzeu și să evadeze cu tabloul furat.
-Jocul este împărțit în două faze logice care respectă principiul LIFO (Last-In, First-Out):
+## 🏛️ Game description: "Museum Heist" (PDA Game)
 
-* Faza de Infiltrare (PUSH): Pe măsură ce treci prin sălile muzeului, fiecare sală este „împinsă” în stiva PDA-ului.Această stivă reține traseul parcurs.
+This game is a practical implementation of a Pushdown Automaton (PDA).
 
-* Faza de Evadare (POP): Pentru a ieși, trebuie să parcurgi traseul invers. Fiecare ieșire dintr-o sală necesită introducerea parolei corecte pentru a „scoate” (pop) sala respectivă din stivă. Dacă stiva se golește, înseamnă că ai evadat cu succes.
+### How to play 🎮
 
-### Concepte teoretice implementate 📖:
+You are an art thief who must infiltrate a museum and escape with the stolen painting.
+The game has two logical phases that follow the LIFO (Last-In, First-Out) principle:
 
-* Alfabetul de intrare : Numele sălilor (Claude Monet, Marie Curie, Mozart).
+- Infiltration phase (PUSH): As you pass through the museum rooms, each room is "pushed" onto the PDA's stack. The stack keeps track of the path you have taken.
 
-* Memorie de tip LIFO: PDA-ul folosește o listă (stivă) pentru a forța jucătorul să respecte ordinea inversă a sălilor parcurse.
+- Escape phase (POP): To get out, you must go back through the same path in reverse. Leaving each room requires entering the correct password to "pop" that room off the stack. If the stack becomes empty, you have escaped successfully.
 
-* Funcția de tranziție : Fiecare tentativă de evadare verifică dacă input-ul utilizatorului coincide cu vârful stivei.
+### Theoretical concepts implemented 📖
 
-* Acceptarea: Misiunea este considerată îndeplinită (șir acceptat) dacă și numai dacă stiva ajunge să fie goală.
+- Input alphabet: The names of the rooms (Claude Monet, Marie Curie, Mozart).
+
+- LIFO memory: The PDA uses a list (stack) to force the player to follow the reverse order of the rooms visited.
+
+- Transition function: Each escape attempt checks whether the user's input matches the top of the stack.
+
+- Acceptance: The mission is considered complete (string accepted) if and only if the stack ends up empty.
