@@ -1,5 +1,4 @@
-# Parser used to extract the automaton definition from file
-# Used in both DFA.py and NFA.py to parse language definitions
+# parse automaton definition from file for DFA and NFA
 
 def load_automaton(filename):
     alphabet = []
@@ -14,16 +13,19 @@ def load_automaton(filename):
         for line in f:
             line = line.strip()
 
+            # toggle section reading
             if line == "!start!":
                 reading = True
                 continue
             if line == "!stop!":
                 reading = False
-                break  # Stop reading after !stop!
+                break
 
+            # skip comments and empty lines
             if not reading or not line or line.startswith("!"):
                 continue
 
+            # parse components: alphabet, states, final, start
             if "=" in line and "=>" not in line:
                 key, value = line.split("=")
                 key, value = key.strip(), value.strip()
@@ -37,6 +39,7 @@ def load_automaton(filename):
                 elif key == "S":
                     initial_state = value.strip()
             
+            # parse transition rule: (state symbol) => next_state
             elif "=>" in line:
                 left, right = line.strip().split("=>")
                 new_state = right.strip()
@@ -54,5 +57,5 @@ def load_automaton(filename):
 
     return alphabet, states, final_states, initial_state, transitions
 
-# Alias for backwards compatibility
+# backwards compatibility alias
 incarca_automat = load_automaton

@@ -1,15 +1,17 @@
+# load parser
 from regex_parser import load_regex
 
+# manual regex matching using recursive backtracking
 def match_regex_manual(pattern, word):
-    # Base case for empty strings (Acceptance)
+    # base case: empty regex accepts empty word
     if not pattern:
         return not word
         
-    # Base case for a single character in regex
+    # base case: single character or wildcard dot
     if len(pattern) == 1:
         return len(word) == 1 and (pattern == '.' or pattern == word)
 
-    # Isolate alternation '|' only at the top level (not inside parentheses)
+    # top-level alternation split on '|'
     parts = []
     level = 0
     current = ""
@@ -29,7 +31,7 @@ def match_regex_manual(pattern, word):
     if len(parts) > 1:
         return any(match_regex_manual(p, word) for p in parts)
 
-    # Extract the first token (single character or parenthesized block)
+    # extract first token: group in parentheses or single character
     if pattern[0] == '(':
         level = 0
         for i, c in enumerate(pattern):
@@ -40,36 +42,35 @@ def match_regex_manual(pattern, word):
             if level == 0:
                 break
         
-        # If parentheses are not properly balanced
         if level != 0:
             i = len(pattern) - 1
             
-        element = pattern[1:i]  # Exclude outer parentheses
+        element = pattern[1:i]
         rest_pattern = pattern[i+1:]
     else:
         element = pattern[0]
         rest_pattern = pattern[1:]
 
-    # Check if the token is followed by Kleene star (*)
+    # check kleene star on token
     has_star = False
     if rest_pattern and rest_pattern[0] == '*':
         has_star = True
         rest_pattern = rest_pattern[1:]
 
-    # Apply matching logic and advance recursively
+    # matching logic with recursion
     if has_star:
-        # Branch A: Ignore star element (0 occurrences)
+        # zero occurrences of star element
         if match_regex_manual(rest_pattern, word):
             return True
             
-        # Branch B: Consume one match of the element and keep the star (+1 occurrences)
+        # one or more occurrences
         for i in range(1, len(word) + 1):
             if match_regex_manual(element, word[:i]) and match_regex_manual(pattern, word[i:]):
                 return True
         return False
         
     else:
-        # Without star: look for a single match (Concatenation)
+        # single match concatenation
         for i in range(1, len(word) + 1):
             if match_regex_manual(element, word[:i]) and match_regex_manual(rest_pattern, word[i:]):
                 return True
@@ -77,9 +78,11 @@ def match_regex_manual(pattern, word):
 
 if __name__ == "__main__":
     try:
-        regex = load_regex("language.regex")  # Read regex from file
+        # load regex from file
+        regex = load_regex("language.regex")
         test_str = input(f"Test regex [{regex}]: ")
         
+        # print match result
         if match_regex_manual(regex, test_str):
             print("YES - Accepted")
         else:

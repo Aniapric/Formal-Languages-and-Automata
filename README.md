@@ -1,35 +1,99 @@
 # Formal Languages and Automata
 
-This repository contains the lab implementations for the Formal Languages and Automata course.
+A collection of Python implementations for formal language theory, automata models, grammars, and regular expressions, developed for the Formal Languages and Automata course at the Faculty of Mathematics and Computer Science, University of Bucharest.
 
-## Repository structure
+## Features
 
-The files are organized by topic:
+- **Deterministic & Non-Deterministic Finite Automata (DFA / NFA)**: Word validation, transition parsing, and epsilon-closure reachability.
+- **Context-Free Grammar Generator (CFG)**: Random recursive derivation of valid language strings from production rules.
+- **Pushdown Automata (PDA)**: Stack-based automaton simulating non-deterministic context-free language acceptance.
+- **Regex Matcher**: Manual regular expression engine using recursive backtracking with concatenation, alternation (`|`), and Kleene star (`*`).
+- **Museum Heist (Interactive PDA Game)**: Terminal game applying LIFO stack mechanics (push on infiltration, pop with clues on escape).
+- **Erdos-Gyarfas Conjecture Verification**: Empirical verification of power-of-two cycle lengths on cubic (3-regular) graphs using `networkx`.
 
-- **`DFA_NFA/`**: Implementations of deterministic (DFA) and nondeterministic (NFA) finite automata.
-- **`Grammar_Generator/`**: A language generator based on formal context-free grammars (CFG).
-- **`Museum_Heist_Game/`**: An interactive terminal game based on pushdown automata logic ("Museum Heist").
-- **`PDA/`**: Implementations of pushdown automata (PDA) for recognizing context-free languages.
-- **`Regex/`**: A regular expression matching engine implemented manually using backtracking.
-- **`Erdos_Gyarfas_Conjecture/`**: Verification script and academic paper on the Erdős–Gyárfás conjecture.
+## Repository Structure
 
----
+```text
+├── DFA_NFA/
+│   ├── DFA.py                    # Deterministic finite automaton runner
+│   ├── NFA.py                    # Non-deterministic finite automaton with epsilon closure
+│   ├── automaton_parser.py       # Configuration parser for .dfa and .nfa files
+│   ├── language.dfa              # Sample DFA language definition
+│   └── language.nfa              # Sample NFA language definition
+├── Grammar_Generator/
+│   ├── generator.py              # Recursive CFG string generator
+│   ├── grammar_parser.py         # Parser for .cfg grammar definitions
+│   └── language.cfg              # Sample context-free grammar rules
+├── PDA/
+│   ├── PDA.py                    # Pushdown automaton simulator
+│   ├── pda_parser.py             # Parser for .pda files
+│   └── language.pda              # Sample PDA language definition
+├── Regex/
+│   ├── regex.py                  # Backtracking regex matching engine
+│   ├── regex_parser.py           # Parser for .regex pattern files
+│   └── language.regex            # Sample regular expression pattern
+├── Museum_Heist_Game/
+│   └── museum_heist.py           # Interactive PDA terminal game
+├── Erdos_Gyarfas_Conjecture/
+│   ├── experiment.py             # Empirical graph cycle verification script
+│   └── Erdos_Gyarfas_Conjecture.pdf # Academic report on the conjecture
+├── README.md
+└── .gitignore
+```
 
-## 🏛️ Game Description: "Museum Heist" (PDA Game)
+## Game Spotlight: "Museum Heist" (PDA Game)
 
-This game is a practical implementation of a Pushdown Automaton (PDA).
+A practical terminal game demonstrating Pushdown Automaton (PDA) mechanics.
 
-### How to Play 🎮
+### How to Play
 
-You are an art thief who must infiltrate a museum and escape with the stolen painting.
-The game has two logical phases that follow the LIFO (Last-In, First-Out) principle:
+You are an art thief infiltrating a museum to steal a painting and escape:
+- **Infiltration phase (PUSH)**: Passing through rooms pushes each room symbol onto the PDA stack, tracking your forward route.
+- **Escape phase (POP)**: Leaving requires retracing steps in exact reverse order (LIFO). Answering the trivia clue pops that room from the stack.
+- **Acceptance**: Escaping with an empty stack means the input was accepted and the heist succeeded.
 
-- **Infiltration phase (PUSH)**: As you pass through the museum rooms, each room is "pushed" onto the PDA's stack. The stack keeps track of the path you have taken.
-- **Escape phase (POP)**: To get out, you must go back through the same path in reverse. Leaving each room requires entering the correct password to "pop" that room off the stack. If the stack becomes empty, you have escaped successfully.
+### Automata Concepts
 
-### Theoretical Concepts Implemented 📖
+- **Input alphabet ($\Sigma$)**: Room symbols (`Claude Monet`, `Marie Curie`, `Mozart`).
+- **LIFO Stack Memory**: Restricts path traversal to exact reverse order.
+- **Transition Function ($\delta$)**: Validates keypad input against the current stack top.
+- **Acceptance Criterion**: Mission completes if and only if the stack is empty.
 
-- **Input alphabet ($\Sigma$)**: The names of the rooms (`Claude Monet`, `Marie Curie`, `Mozart`).
-- **LIFO memory**: The PDA uses a stack to force the player to follow the reverse order of the rooms visited.
-- **Transition function ($\delta$)**: Each escape attempt checks whether the user's input matches the top of the stack.
-- **Acceptance**: The mission is considered complete (string accepted) if and only if the stack ends up empty.
+## Requirements
+
+- Python 3.8+
+- `networkx` (required only for `Erdos_Gyarfas_Conjecture/experiment.py`):
+  ```bash
+  pip install networkx
+  ```
+
+## How to Run
+
+Execute any script directly from the repository root:
+
+```bash
+# DFA & NFA
+python3 DFA_NFA/DFA.py
+python3 DFA_NFA/NFA.py
+
+# Grammar Generator
+python3 Grammar_Generator/generator.py
+
+# Pushdown Automaton
+python3 PDA/PDA.py
+
+# Regex Engine
+python3 Regex/regex.py
+
+# Museum Heist Game
+python3 Museum_Heist_Game/museum_heist.py
+
+# Erdos-Gyarfas Conjecture Verification
+python3 Erdos_Gyarfas_Conjecture/experiment.py
+```
+
+## Author
+
+- **Ania Pricop** — [@Aniapric](https://github.com/Aniapric)
+- **Course**: Formal Languages and Automata
+- **Faculty**: Faculty of Mathematics and Computer Science, University of Bucharest

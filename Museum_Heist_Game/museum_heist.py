@@ -16,7 +16,7 @@ def print_slow(text, delay=0.04):
         time.sleep(delay)
     print()
 
-# --- ASCII ART DRAWINGS ---
+# ascii art drawings
 
 # Draw museum facade
 def draw_museum_front():
@@ -108,7 +108,7 @@ def draw_escaped():
         +------------------------------------------+
     """)
 
-# --- GAME PHASES ---
+# game phases
 
 # Introductory story
 def intro():
@@ -223,7 +223,7 @@ deseneaza_evadat = draw_escaped
 faza_infiltrare = infiltration_phase
 faza_evadare = escape_phase
 
-# MAIN
+# main entry point
 if __name__ == "__main__":
     security = {
         "Claude Monet": "He was obsessed with how light changes throughout the day and painted hundreds of variations of the same subject, the famous 'Water Lilies' in his Giverny garden.",
